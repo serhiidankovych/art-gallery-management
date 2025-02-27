@@ -13,10 +13,15 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.4.5",
+    "@reduxjs/toolkit": "^2.6.0",
     "@tailwindcss/vite": "^4.0.8",
+    "@types/node": "^22.13.5",
+    "@types/react-redux": "^7.1.34",
+    "axios": "^1.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "react-redux": "^9.2.0",
     "tailwindcss": "^4.0.8"
   },
   "devDependencies": {
