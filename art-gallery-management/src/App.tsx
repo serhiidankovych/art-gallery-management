@@ -1,44 +1,36 @@
-import React, { useState, useEffect } from "react";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import ArtCard from "./components/ArtCard";
-import SearchFilter from "./components/SearchFilter";
-import { Container, Pagination, Stack, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "./store/store";
+import { useAppDispatch } from "./hooks/useTypedDispatch.ts";
+import Header from "./components/common/Header.tsx";
+import Footer from "./components/common/Footer.tsx";
+import ArtworkList from "./components/art/ArtworkList.tsx";
+import PaginationControls from "./components/common/PaginationControls.tsx";
+import SearchFilter from "./components/search/SearchFilter.tsx";
+import { Container, Typography } from "@mui/material";
 import { Artwork } from "./types/types";
-import { data } from "./data/data";
+import { fetchArtworks } from "./slices/artworksSlice.ts";
 
 const App: React.FC = () => {
-  const [artworks, setArtworks] = useState<Artwork[]>(data);
-  const [filteredArtworks, setFilteredArtworks] = useState<Artwork[]>(data);
+  const dispatch = useAppDispatch();
+
+  const { artworks, status } = useSelector(
+    (state: RootState) => state.artworks
+  );
+  const [filteredArtworks, setFilteredArtworks] = useState<Artwork[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [filteredArtworks]);
+    dispatch(fetchArtworks());
+  }, [dispatch]);
 
-  const handleDeleteArtwork = (id: string) => {
-    const updatedArtworks = artworks.filter((art) => art.id !== id);
-    setArtworks(updatedArtworks);
-    setFilteredArtworks(updatedArtworks);
-  };
-
-  const handleEditArtwork = (updatedArtwork: Artwork, id: string) => {
-    const updatedArtworks = artworks.map((art) =>
-      art.id === id ? { ...updatedArtwork, id } : art
-    );
-
-    setArtworks(updatedArtworks);
-    setFilteredArtworks(updatedArtworks);
-  };
-
-  const handleAddArtwork = (newArtwork: Artwork) => {
-    const uniqueArtwork = { ...newArtwork, id: crypto.randomUUID() };
-    const updatedArtworks = [...artworks, uniqueArtwork];
-
-    setArtworks(updatedArtworks);
-    setFilteredArtworks(updatedArtworks);
-  };
+  useEffect(() => {
+    if (artworks && artworks.length > 0) {
+      setFilteredArtworks(artworks);
+      setCurrentPage(1);
+    }
+  }, [artworks]);
 
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
@@ -61,54 +53,26 @@ const App: React.FC = () => {
       <Container maxWidth="xl">
         <Typography
           variant="h2"
-          align="center"
+          align="left"
           color="text.primary"
-          p={0}
-          m={4}
+          mt={6}
           gutterBottom
         >
           Explore our collection
         </Typography>
 
-        <div className="flex flex-col lg:flex-col-reverse gap-2">
+        <div className="flex flex-col gap-2">
           <SearchFilter
             data={artworks}
             onFilter={setFilteredArtworks}
-            onAdd={handleAddArtwork}
-            onDelete={handleDeleteArtwork}
-            onEdit={handleEditArtwork}
+            setCurrentPage={setCurrentPage}
           />
-          <div>
-            {filteredArtworks.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-fr">
-                {currentArtworks.map((artwork) => (
-                  <ArtCard
-                    key={artwork.id}
-                    artwork={artwork}
-                    onDelete={handleDeleteArtwork}
-                    onEdit={handleEditArtwork}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-10">
-                <Typography variant="h6" color="textSecondary">
-                  No artworks found
-                </Typography>
-              </div>
-            )}
-
-            {filteredArtworks.length > 0 && (
-              <Stack spacing={2} alignItems="center" marginY={2}>
-                <Pagination
-                  count={totalPages}
-                  page={currentPage}
-                  onChange={handlePageChange}
-                  color="primary"
-                />
-              </Stack>
-            )}
-          </div>
+          <ArtworkList artworks={currentArtworks} status={status} />
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
       </Container>
       <Footer />

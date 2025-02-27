@@ -1,23 +1,19 @@
 import { useState, useEffect } from "react";
 import { Button, IconButton, MenuItem, Select, TextField } from "@mui/material";
 import { IoSearch } from "react-icons/io5";
-import { Artwork } from "../types/types";
-import ArtCardDialog from "./ArtCardDialog";
+import { Artwork, ArtworkType } from "../../types/types";
+import ArtCardDialog from "../art/ArtCardDialog";
 
 interface SearchFilterProps {
   data: Artwork[];
   onFilter: (filteredData: Artwork[]) => void;
-  onAdd: (newArtwork: Artwork) => void;
-  onDelete: (id: string) => void;
-  onEdit: (artwork: Artwork, id: string) => void;
+  setCurrentPage: (page: number) => void;
 }
 
 const SearchFilter: React.FC<SearchFilterProps> = ({
   data,
   onFilter,
-  onAdd,
-  onDelete,
-  onEdit,
+  setCurrentPage,
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedArtist, setSelectedArtist] = useState<string>("");
@@ -40,6 +36,8 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
 
   useEffect(() => {
     applyFilters();
+    setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchQuery,
     selectedArtist,
@@ -98,7 +96,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
       <div className="flex flex-wrap gap-4 items-center w-full md:w-auto">
         <div className="flex items-center bg-white rounded-lg shadow-sm">
           <TextField
-            value={searchQuery}
+            value={searchQuery || ""}
             label="Search artworks"
             variant="outlined"
             size="small"
@@ -122,7 +120,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         </div>
 
         <Select
-          value={selectedAvailability}
+          value={selectedAvailability || ""}
           displayEmpty
           size="small"
           onChange={(e) => setSelectedAvailability(e.target.value)}
@@ -139,7 +137,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         </Select>
 
         <Select
-          value={selectedArtist}
+          value={selectedArtist || ""}
           displayEmpty
           size="small"
           onChange={(e) => setSelectedArtist(e.target.value)}
@@ -152,14 +150,14 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         >
           <MenuItem value="">All Artists</MenuItem>
           {uniqueArtists.map((artist, index) => (
-            <MenuItem key={`artist-${index}`} value={artist}>
+            <MenuItem key={`artist-${index}`} value={artist || ""}>
               {artist}
             </MenuItem>
           ))}
         </Select>
 
         <Select
-          value={selectedType}
+          value={selectedType || ""}
           displayEmpty
           size="small"
           onChange={(e) => setSelectedType(e.target.value)}
@@ -172,14 +170,14 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         >
           <MenuItem value="">All Types</MenuItem>
           {uniqueTypes.map((type, index) => (
-            <MenuItem key={`type-${index}`} value={type}>
+            <MenuItem key={`type-${index}`} value={type || ""}>
               {type}
             </MenuItem>
           ))}
         </Select>
 
         <Select
-          value={sortOrder}
+          value={sortOrder || ""}
           displayEmpty
           size="small"
           onChange={(e) => setSortOrder(e.target.value)}
@@ -230,18 +228,14 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           isEditing={false}
           open={open}
           artwork={{
-            id: crypto.randomUUID(),
             title: "",
             artist: "",
             price: 0,
             url: "",
-            type: "",
+            type: "" as ArtworkType,
             availability: false,
           }}
           onClose={handleClose}
-          onDelete={onDelete}
-          onEdit={onEdit}
-          onAdd={onAdd}
         />
       </div>
     </div>
