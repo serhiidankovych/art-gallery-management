@@ -6,19 +6,16 @@ import CardMedia from "@mui/material/CardMedia";
 import CardActionArea from "@mui/material/CardActionArea";
 import Box from "@mui/material/Box";
 
-import { formatPrice } from "../utils/utils";
-import { Artwork } from "../types/types";
+import { formatPrice } from "../../utils/utils";
+import { Artwork } from "../../types/types";
 import ArtCardDialog from "./ArtCardDialog";
 
 interface ArtCardProps {
   artwork: Artwork;
-  onDelete: (id: string) => void;
-  onEdit: (artwork: Artwork, id: string) => void;
 }
 
-const ArtCard: React.FC<ArtCardProps> = ({ artwork, onDelete, onEdit }) => {
+const ArtCard: React.FC<ArtCardProps> = ({ artwork }) => {
   const [open, setOpen] = useState(false);
-
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -87,9 +84,6 @@ const ArtCard: React.FC<ArtCardProps> = ({ artwork, onDelete, onEdit }) => {
         open={open}
         artwork={artwork}
         onClose={handleClose}
-        onDelete={onDelete}
-        onEdit={onEdit}
-        onAdd={() => {}}
       />
     </Box>
   );
